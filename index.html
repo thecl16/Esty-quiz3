@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Soal – Kajian Software ASIP4316</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg:        #0b0f1a;
+    --surface:   #111827;
+    --card:      #1a2235;
+    --border:    #243047;
+    --accent:    #38bdf8;
+    --accent2:   #818cf8;
+    --green:     #34d399;
+    --red:       #f87171;
+    --orange:    #fbbf24;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --radius:    14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background grid ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 48px 20px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+    background: linear-gradient(135deg, rgba(56,189,248,.15), rgba(129,140,248,.15));
+    border: 1px solid rgba(56,189,248,.3);
+    color: var(--accent);
+    padding: 5px 14px; border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-size: clamp(1.7rem, 4vw, 2.8rem);
+    font-weight: 800; line-height: 1.15;
+    background: linear-gradient(135deg, #e2e8f0 30%, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--muted); margin-top: 8px; font-size: .95rem; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+    padding: 20px; position: relative; z-index: 10;
+  }
+  .stat-pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 18px;
+    font-size: .82rem; display: flex; align-items: center; gap: 7px;
+  }
+  .stat-pill .label { color: var(--muted); }
+  .stat-pill .value { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .stat-pill .value.good  { color: var(--green); }
+  .stat-pill .value.bad   { color: var(--red); }
+  .stat-pill .value.info  { color: var(--accent); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 820px; margin: 0 auto;
+    padding: 20px 16px 80px;
+    position: relative; z-index: 10;
+  }
+
+  /* ── TOPIC FILTER ── */
+  .topic-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .topic-btn {
+    font-family: 'Sora', sans-serif; font-size: .78rem; font-weight: 600;
+    padding: 6px 14px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--muted); transition: all .2s;
+  }
+  .topic-btn:hover, .topic-btn.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(56,189,248,.08);
+  }
+  .topic-btn.active { font-weight: 700; }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    animation: slideIn .35s ease;
+    position: relative; overflow: hidden;
+  }
+  .q-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-meta {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+    color: var(--accent); font-weight: 600;
+  }
+  .q-topic-tag {
+    font-size: .7rem; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted);
+    background: var(--surface);
+  }
+  .q-type-tag {
+    font-size: .68rem; padding: 3px 10px; border-radius: 999px;
+    font-weight: 600; letter-spacing: .05em;
+  }
+  .q-type-tag.pilihan  { background: rgba(56,189,248,.12); color: var(--accent);  border: 1px solid rgba(56,189,248,.25); }
+  .q-type-tag.benar    { background: rgba(251,191,36,.12);  color: var(--orange); border: 1px solid rgba(251,191,36,.25); }
+  .q-type-tag.esai     { background: rgba(129,140,248,.12); color: var(--accent2);border: 1px solid rgba(129,140,248,.25); }
+
+  .q-text {
+    font-size: 1.02rem; line-height: 1.7; color: var(--text);
+    margin-bottom: 20px;
+  }
+  .q-text code {
+    font-family: 'JetBrains Mono', monospace; font-size: .88em;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2px 7px; border-radius: 5px; color: var(--orange);
+  }
+
+  /* ── OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    text-align: left; cursor: pointer;
+    font-family: 'Sora', sans-serif; font-size: .92rem;
+    color: var(--text); transition: all .2s;
+    display: flex; align-items: flex-start; gap: 12px;
+    position: relative; overflow: hidden;
+  }
+  .option-btn:not(:disabled):hover {
+    border-color: var(--accent);
+    background: rgba(56,189,248,.07);
+    transform: translateX(4px);
+  }
+  .opt-letter {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .8rem;
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    transition: all .2s;
+  }
+  .option-btn:not(:disabled):hover .opt-letter {
+    background: var(--accent); border-color: var(--accent); color: #0b0f1a;
+  }
+  .option-btn.correct  { border-color: var(--green);  background: rgba(52,211,153,.08); }
+  .option-btn.correct  .opt-letter  { background: var(--green); border-color: var(--green); color: #0b0f1a; }
+  .option-btn.wrong    { border-color: var(--red);    background: rgba(248,113,113,.08); }
+  .option-btn.wrong    .opt-letter  { background: var(--red); border-color: var(--red); color: #0b0f1a; }
+  .option-btn.reveal   { border-color: var(--green);  background: rgba(52,211,153,.05); }
+  .option-btn.reveal   .opt-letter  { background: rgba(52,211,153,.3); border-color: var(--green); color: var(--green); }
+  .option-btn:disabled { cursor: default; }
+
+  /* ── TRUE/FALSE ── */
+  .tf-row { display: flex; gap: 12px; }
+  .tf-btn {
+    flex: 1; padding: 14px;
+    border-radius: 10px; cursor: pointer;
+    font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700;
+    transition: all .2s;
+  }
+  .tf-btn.true-btn  { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.3);  color: var(--green);  }
+  .tf-btn.false-btn { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red);    }
+  .tf-btn:not(:disabled):hover { transform: scale(1.03); filter: brightness(1.15); }
+  .tf-btn.correct  { filter: brightness(1.2); box-shadow: 0 0 16px rgba(52,211,153,.3); }
+  .tf-btn.wrong    { filter: brightness(.8); opacity: .6; }
+  .tf-btn:disabled { cursor: default; }
+
+  /* ── ESSAY ── */
+  .essay-area {
+    width: 100%;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    font-family: 'Sora', sans-serif; font-size: .92rem;
+    color: var(--text); resize: vertical; min-height: 110px;
+    transition: border-color .2s;
+    outline: none;
+  }
+  .essay-area:focus { border-color: var(--accent); }
+  .submit-essay {
+    margin-top: 10px;
+    padding: 11px 24px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: .88rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0b0f1a; transition: transform .15s, filter .15s;
+  }
+  .submit-essay:hover { transform: scale(1.04); filter: brightness(1.1); }
+
+  /* ── FEEDBACK ── */
+  .feedback {
+    margin-top: 18px; border-radius: 10px; padding: 16px 18px;
+    animation: fadeIn .3s ease; line-height: 1.65;
+    font-size: .9rem;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px);} to{opacity:1;transform:translateY(0);}}
+  .feedback.correct-fb { background: rgba(52,211,153,.07);  border: 1px solid rgba(52,211,153,.25); }
+  .feedback.wrong-fb   { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.25); }
+  .feedback.essay-fb   { background: rgba(129,140,248,.07); border: 1px solid rgba(129,140,248,.25); }
+  .feedback .fb-title {
+    font-weight: 700; font-size: .95rem; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .feedback.correct-fb .fb-title { color: var(--green); }
+  .feedback.wrong-fb   .fb-title { color: var(--red); }
+  .feedback.essay-fb   .fb-title { color: var(--accent2); }
+  .feedback .detail    { color: #94a3b8; }
+  .feedback .key-point { 
+    margin-top: 10px; padding: 10px 12px; 
+    background: rgba(0,0,0,.25); border-radius: 8px; 
+    border-left: 3px solid var(--accent2); 
+    font-size: .85rem; color: #c7d2e5;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .btn-next, .btn-restart {
+    padding: 11px 28px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: .9rem;
+    transition: transform .15s, filter .15s;
+  }
+  .btn-next {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0b0f1a;
+  }
+  .btn-restart {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-next:hover    { transform: scale(1.04); filter: brightness(1.1); }
+  .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── PROGRESS ── */
+  .progress-wrap { margin-bottom: 20px; }
+  .progress-bar-bg {
+    height: 4px; background: var(--border); border-radius: 999px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .4s ease;
+  }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+    color: var(--muted); margin-top: 5px;
+  }
+
+  /* ── RESULT SCREEN ── */
+  #result-screen {
+    display: none; text-align: center; padding: 40px 20px;
+    animation: slideIn .4s ease;
+  }
+  .score-ring {
+    width: 140px; height: 140px; border-radius: 50%;
+    border: 6px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    position: relative;
+    background: var(--card);
+  }
+  .score-ring::before {
+    content: ''; position: absolute; inset: -6px; border-radius: 50%;
+    border: 6px solid transparent;
+    border-top-color: var(--accent);
+    border-right-color: var(--accent2);
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .score-pct { font-size: 2.4rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .score-sub { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  #result-screen h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  #result-screen p  { color: var(--muted); max-width: 440px; margin: 0 auto 28px; line-height: 1.6; }
+  .result-stats {
+    display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .rs-pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 22px; min-width: 100px;
+  }
+  .rs-pill .rs-val { font-size: 1.6rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .rs-pill .rs-lbl { font-size: .74rem; color: var(--muted); margin-top: 3px; }
+  .rs-pill.g { border-color: rgba(52,211,153,.3); }
+  .rs-pill.g .rs-val { color: var(--green); }
+  .rs-pill.r { border-color: rgba(248,113,113,.3); }
+  .rs-pill.r .rs-val { color: var(--red); }
+  .rs-pill.a { border-color: rgba(56,189,248,.3); }
+  .rs-pill.a .rs-val { color: var(--accent); }
+  .btn-play-again {
+    padding: 14px 40px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0b0f1a; transition: transform .15s, filter .15s;
+    letter-spacing: .03em;
+  }
+  .btn-play-again:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+  /* loading */
+  .loading { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .dot-spin {
+    display: inline-flex; gap: 6px; margin-bottom: 16px;
+  }
+  .dot-spin span {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+    animation: bounce .9s ease-in-out infinite;
+  }
+  .dot-spin span:nth-child(2) { animation-delay: .15s; }
+  .dot-spin span:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%,80%,100%{transform:scale(.6)} 40%{transform:scale(1)} }
+
+  .error-box { 
+    background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3);
+    border-radius: var(--radius); padding: 20px; margin: 20px 0;
+    text-align: center; color: var(--red);
+  }
+  
+  /* Loading spinner overlay */
+  #api-loading {
+    position: fixed; inset:0; background: rgba(11,15,26,.8);
+    display: flex; align-items:center; justify-content:center;
+    z-index: 999; backdrop-filter: blur(4px);
+    display: none;
+  }
+  .spinner-box { text-align:center; }
+  .spinner-box p { color:var(--muted); margin-top:16px; font-size:.9rem; }
+  .big-spin {
+    width:52px;height:52px;border-radius:50%;
+    border:4px solid var(--border);
+    border-top-color:var(--accent);
+    animation: spin .8s linear infinite;
+    margin: 0 auto;
+  }
+
+  @media(max-width:540px){
+    .q-card { padding: 20px 16px; }
+    .tf-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div id="api-loading">
+  <div class="spinner-box">
+    <div class="big-spin"></div>
+    <p>Membuat soal baru...</p>
+  </div>
+</div>
+
+<header>
+  <div class="badge">ASIP4316 • Universitas Terbuka</div>
+  <h1>Kajian Software</h1>
+  <p>Latihan Soal Interaktif — Soal berubah setiap sesi untuk pengalaman belajar yang dinamis</p>
+</header>
+
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-pill"><span class="label">Soal</span><span class="value info" id="stat-q">–</span></div>
+  <div class="stat-pill"><span class="label">Benar</span><span class="value good" id="stat-c">0</span></div>
+  <div class="stat-pill"><span class="label">Salah</span><span class="value bad" id="stat-w">0</span></div>
+  <div class="stat-pill"><span class="label">Skor</span><span class="value info" id="stat-s">–</span></div>
+</div>
+
+<main>
+  <!-- Topic filter -->
+  <div class="topic-row" id="topic-row"></div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-label"><span id="prog-label">0 / 0</span><span id="prog-pct">0%</span></div>
+  </div>
+
+  <!-- Quiz area -->
+  <div id="quiz-area">
+    <div class="loading">
+      <div class="dot-spin"><span></span><span></span><span></span></div>
+      <p>Memuat soal pertama…</p>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div id="result-screen">
+    <div class="score-ring">
+      <div class="score-pct" id="res-pct">0%</div>
+      <div class="score-sub">Skor</div>
+    </div>
+    <h2 id="res-title">Selesai!</h2>
+    <p id="res-msg"></p>
+    <div class="result-stats">
+      <div class="rs-pill g"><div class="rs-val" id="res-c">0</div><div class="rs-lbl">Benar</div></div>
+      <div class="rs-pill r"><div class="rs-val" id="res-w">0</div><div class="rs-lbl">Salah</div></div>
+      <div class="rs-pill a"><div class="rs-val" id="res-t">0</div><div class="rs-lbl">Total</div></div>
+    </div>
+    <button class="btn-play-again" id="btn-play-again">🔄 Ulangi Latihan</button>
+  </div>
+</main>
+
+<script>
+// ─────────────────────────────────────────────
+// QUESTION BANK: 80 soal dari materi ASIP4316
+// ─────────────────────────────────────────────
+const QUESTION_BANK = [
+  // ── TOPIK 1: Konsep Dasar Software ──
+  {topic:"Konsep Dasar Software", type:"pilihan",
+   q:"Menurut definisi IEEE, perangkat lunak (software) adalah...",
+   opts:["Hanya program yang dapat dijalankan di komputer","Program komputer, prosedur, dan dokumentasi yang berhubungan dengan operasi sistem komputer","Sekumpulan instruksi mesin biner yang tersimpan di ROM","Hardware yang dikendalikan secara elektronik"],
+   ans:1, exp:"IEEE mendefinisikan software secara komprehensif mencakup program, prosedur, serta dokumentasi terkait. Software bukan sekadar kode yang dapat dieksekusi, tetapi mencakup seluruh artefak yang mendukung sistem komputer.", tip:"Ingat bahwa software = program + prosedur + dokumentasi."},
+
+  {topic:"Konsep Dasar Software", type:"benar",
+   q:"Software merupakan produk yang dapat aus (worn out) seperti hardware seiring bertambahnya waktu.",
+   ans:false, exp:"Berbeda dengan hardware, software tidak mengalami keausan fisik. Namun software bisa mengalami 'deteriorasi' akibat perubahan kebutuhan, bug yang terakumulasi, atau teknologi yang ketinggalan zaman — disebut software aging/entropy.", tip:"Software 'memburuk' karena perubahan lingkungan, bukan karena aus secara fisik."},
+
+  {topic:"Konsep Dasar Software", type:"pilihan",
+   q:"Karakteristik yang MEMBEDAKAN software dari produk rekayasa lainnya adalah...",
+   opts:["Software diproduksi secara massal menggunakan proses manufaktur","Software dikembangkan atau direkayasa, tidak diproduksi secara manufaktur","Software memerlukan bahan baku fisik","Software dapat digandakan tanpa biaya tambahan signifikan saja"],
+   ans:1, exp:"Software merupakan hasil rekayasa (engineering) intelektual, bukan proses manufaktur. Perbedaan mendasar ini memengaruhi cara pengembangan, pengelolaan kualitas, dan estimasi biaya software.", tip:"Kunci: software = direkayasa (engineered), bukan dibuat (manufactured)."},
+
+  {topic:"Konsep Dasar Software", type:"pilihan",
+   q:"Kategori software berdasarkan cara distribusinya yang TIDAK memerlukan biaya lisensi pembelian adalah...",
+   opts:["Proprietary software","Freeware","Commercial software","Shareware setelah masa trial"],
+   ans:1, exp:"Freeware adalah software yang didistribusikan secara gratis tanpa biaya lisensi. Berbeda dengan open source (yang memberi akses kode sumber), freeware bisa bersifat closed source namun tetap gratis digunakan.", tip:"Freeware ≠ Open Source; freeware gratis pakai, open source gratis + akses kode."},
+
+  {topic:"Konsep Dasar Software", type:"benar",
+   q:"Open source software berarti software tersebut dapat digunakan, dimodifikasi, dan didistribusikan ulang secara bebas oleh siapa pun.",
+   ans:true, exp:"Definisi open source menurut Open Source Initiative (OSI) memang mencakup kebebasan penggunaan, modifikasi, dan redistribusi. Namun kebebasan ini tetap tunduk pada lisensi tertentu (GPL, MIT, Apache) yang mengatur syarat dan ketentuannya.", tip:"Open source = akses kode sumber + kebebasan modifikasi/distribusi dengan syarat lisensi."},
+
+  {topic:"Konsep Dasar Software", type:"pilihan",
+   q:"Software yang dirancang untuk membantu pengguna melakukan tugas-tuklasan tertentu seperti pengolah kata atau spreadsheet disebut...",
+   opts:["System software","Middleware","Application software","Embedded software"],
+   ans:2, exp:"Application software dirancang untuk memenuhi kebutuhan pengguna akhir (end-user). Contoh: Microsoft Word, Excel, Photoshop. Berbeda dengan system software (OS, driver) yang mengelola sumber daya komputer.", tip:"Application software = untuk pengguna; system software = untuk mengelola komputer."},
+
+  // ── TOPIK 2: Siklus Hidup Pengembangan Software ──
+  {topic:"SDLC", type:"pilihan",
+   q:"Fase pertama dalam Software Development Life Cycle (SDLC) yang menentukan apa yang harus dibangun adalah...",
+   opts:["Design","Implementation","Requirements Analysis","Testing"],
+   ans:2, exp:"Requirements Analysis adalah fase fundamental SDLC. Pada fase ini dilakukan identifikasi, dokumentasi, dan validasi kebutuhan stakeholder. Kesalahan di fase ini sangat mahal untuk diperbaiki di fase selanjutnya — biaya perbaikan meningkat eksponensial.", tip:"'Requirements' = kebutuhan. Tanpa kebutuhan yang jelas, desain dan implementasi akan salah arah."},
+
+  {topic:"SDLC", type:"benar",
+   q:"Model Waterfall memungkinkan kembali ke fase sebelumnya dengan mudah tanpa dampak signifikan terhadap biaya dan waktu.",
+   ans:false, exp:"Kelemahan utama Waterfall justru adalah sulitnya kembali ke fase sebelumnya. Perubahan requirement setelah fase desain atau implementasi dimulai akan sangat mahal dan memakan waktu. Inilah yang mendorong munculnya metodologi Agile.", tip:"Waterfall = aliran satu arah. Kembali ke atas = mahal & sulit."},
+
+  {topic:"SDLC", type:"pilihan",
+   q:"Pada model Spiral, dimensi radial merepresentasikan...",
+   opts:["Urutan waktu pengembangan","Kumulatif biaya yang telah dikeluarkan","Jumlah iterasi yang telah dilakukan","Kompleksitas teknis sistem"],
+   ans:1, exp:"Dalam model Spiral Boehm, sumbu radial (dari pusat ke luar) merepresentasikan akumulasi biaya. Semakin jauh dari pusat, semakin banyak biaya yang telah diinvestasikan. Sumbu angular merepresentasikan kemajuan setiap siklus.", tip:"Spiral: radial = biaya kumulatif; angular = kemajuan per siklus."},
+
+  {topic:"SDLC", type:"pilihan",
+   q:"Pendekatan Agile yang menekankan pada iterasi pendek (sprint) dan kolaborasi tim lintas fungsi adalah...",
+   opts:["Kanban","Scrum","Extreme Programming (XP)","Lean Software Development"],
+   ans:1, exp:"Scrum menggunakan sprint (iterasi 1-4 minggu) dengan peran khusus: Product Owner, Scrum Master, dan Development Team. Sprint Planning, Daily Scrum, Sprint Review, dan Sprint Retrospective adalah seremonial utama Scrum.", tip:"Scrum = sprint + Product Owner + Scrum Master + Daily Standup."},
+
+  {topic:"SDLC", type:"benar",
+   q:"Extreme Programming (XP) memperkenalkan praktik 'pair programming' di mana dua programmer bekerja bersama di satu komputer secara bergantian.",
+   ans:true, exp:"Pair programming adalah praktik inti XP. Satu programmer bertindak sebagai 'driver' (menulis kode) sementara yang lain sebagai 'navigator' (mereview kode secara real-time). Penelitian menunjukkan praktik ini meningkatkan kualitas kode meski memerlukan lebih banyak sumber daya manusia.", tip:"XP pair programming: driver (nulis) + navigator (review) = kode lebih berkualitas."},
+
+  {topic:"SDLC", type:"pilihan",
+   q:"Dokumen yang dihasilkan dari fase Requirements Analysis yang mendeskripsikan perilaku sistem dari sudut pandang pengguna adalah...",
+   opts:["Software Design Document (SDD)","Software Requirements Specification (SRS)","System Test Plan","Project Charter"],
+   ans:1, exp:"SRS (Software Requirements Specification) adalah dokumen formal yang mendokumentasikan kebutuhan fungsional dan non-fungsional sistem dari perspektif pengguna. SRS menjadi kontrak antara tim pengembang dan stakeholder.", tip:"SRS = kontrak tertulis antara developer dan stakeholder tentang apa yang harus dibangun."},
+
+  // ── TOPIK 3: Rekayasa Kebutuhan ──
+  {topic:"Rekayasa Kebutuhan", type:"pilihan",
+   q:"Kebutuhan yang mendeskripsikan BAGAIMANA sistem melakukan fungsinya (performa, keamanan, keandalan) disebut...",
+   opts:["Functional requirements","Non-functional requirements","Business requirements","User requirements"],
+   ans:1, exp:"Non-functional requirements (NFR) mendefinisikan kualitas atau atribut sistem: performa (waktu respons < 2 detik), keandalan (uptime 99.9%), keamanan, skalabilitas, dll. NFR sering lebih sulit diukur namun sama pentingnya dengan functional requirements.", tip:"Functional = APA yang dilakukan sistem. Non-functional = SEBERAPA BAIK sistem melakukannya."},
+
+  {topic:"Rekayasa Kebutuhan", type:"benar",
+   q:"Use case diagram menggambarkan hubungan antara aktor (pengguna) dan fungsionalitas yang disediakan sistem.",
+   ans:true, exp:"Use case diagram adalah alat UML yang menggambarkan interaksi antara aktor (siapa saja yang berinteraksi dengan sistem) dengan use case (fungsionalitas sistem). Diagram ini membantu mengidentifikasi scope sistem dan kebutuhan pengguna.", tip:"Use case diagram: aktor (orang/sistem luar) ↔ use case (fungsi sistem)."},
+
+  {topic:"Rekayasa Kebutuhan", type:"pilihan",
+   q:"Teknik elisitasi kebutuhan yang paling umum digunakan untuk mendapatkan informasi langsung dari pengguna adalah...",
+   opts:["Brainstorming","Interview","Prototyping","Observation"],
+   ans:1, exp:"Interview (wawancara) adalah teknik elisitasi yang paling banyak digunakan karena memungkinkan pengumpulan informasi mendalam langsung dari stakeholder. Ada dua jenis: structured interview (pertanyaan terstruktur) dan unstructured interview (lebih fleksibel).", tip:"Interview = cara paling langsung menggali kebutuhan dari 'sumbernya'."},
+
+  {topic:"Rekayasa Kebutuhan", type:"pilihan",
+   q:"Dalam konteks rekayasa kebutuhan, 'creeping requirements' atau 'scope creep' merujuk pada...",
+   opts:["Penambahan kebutuhan baru yang tidak terkontrol selama pengembangan","Kebutuhan yang ditemukan saat testing","Kebutuhan yang terlalu teknis","Kebutuhan yang bertentangan antara stakeholder"],
+   ans:0, exp:"Scope creep adalah fenomena penambahan kebutuhan baru yang tidak terencana dan tidak terkontrol selama proyek berjalan. Tanpa manajemen perubahan yang ketat, scope creep dapat mengancam anggaran, jadwal, dan kualitas proyek.", tip:"Scope creep = kebutuhan yang 'merayap masuk' tanpa kontrol = ancaman proyek."},
+
+  // ── TOPIK 4: Desain Software ──
+  {topic:"Desain Software", type:"pilihan",
+   q:"Prinsip desain yang menyatakan bahwa setiap modul harus memiliki satu dan hanya satu alasan untuk berubah adalah...",
+   opts:["Open/Closed Principle","Single Responsibility Principle","Liskov Substitution Principle","Dependency Inversion Principle"],
+   ans:1, exp:"Single Responsibility Principle (SRP) adalah prinsip pertama dari SOLID. Dikemukakan oleh Robert C. Martin, SRP menyatakan bahwa sebuah class/modul harus memiliki satu tanggung jawab, sehingga hanya ada satu alasan untuk mengubahnya. Ini meningkatkan kohesi dan mengurangi coupling.", tip:"SRP = satu modul, satu tanggung jawab, satu alasan berubah."},
+
+  {topic:"Desain Software", type:"benar",
+   q:"Coupling yang tinggi (high coupling) antara modul dianggap baik dalam desain software karena menunjukkan integrasi yang kuat.",
+   ans:false, exp:"High coupling justru menjadi antipattern dalam desain software. Coupling tinggi berarti modul saling bergantung, sehingga perubahan pada satu modul akan berdampak besar pada modul lain. Tujuan desain yang baik adalah low coupling dan high cohesion.", tip:"Good design = LOW coupling + HIGH cohesion. Bukan sebaliknya!"},
+
+  {topic:"Desain Software", type:"pilihan",
+   q:"Pola desain (design pattern) yang digunakan untuk memastikan hanya ada satu instance dari sebuah class adalah...",
+   opts:["Factory Pattern","Observer Pattern","Singleton Pattern","Strategy Pattern"],
+   ans:2, exp:"Singleton Pattern memastikan sebuah class hanya memiliki satu instance dan menyediakan titik akses global ke instance tersebut. Sering digunakan untuk konfigurasi aplikasi, koneksi database, atau logger. Termasuk dalam kategori Creational Pattern dalam GoF.", tip:"Singleton = satu dan hanya satu instance. 'Single' = satu."},
+
+  {topic:"Desain Software", type:"pilihan",
+   q:"Dalam UML, diagram yang menggambarkan struktur statis sistem termasuk class, atribut, metode, dan hubungannya adalah...",
+   opts:["Sequence Diagram","Activity Diagram","Class Diagram","State Diagram"],
+   ans:2, exp:"Class Diagram adalah salah satu diagram UML yang paling fundamental. Menggambarkan kelas-kelas dalam sistem, atribut dan metode masing-masing kelas, serta hubungan antar kelas (asosiasi, agregasi, komposisi, inheritance). Merupakan diagram struktural (bukan behavioral).", tip:"Class Diagram = peta statis sistem: kelas, atribut, metode, relasi."},
+
+  {topic:"Desain Software", type:"benar",
+   q:"Arsitektur MVC (Model-View-Controller) memisahkan logika bisnis, antarmuka pengguna, dan penanganan input untuk meningkatkan maintainability.",
+   ans:true, exp:"MVC adalah pola arsitektur yang memisahkan aplikasi menjadi tiga komponen: Model (data dan logika bisnis), View (presentasi/UI), dan Controller (mediator antara model dan view). Pemisahan ini meningkatkan maintainability, testability, dan memungkinkan pengembangan paralel.", tip:"MVC = Model (data) + View (tampilan) + Controller (pengendali/mediator)."},
+
+  {topic:"Desain Software", type:"pilihan",
+   q:"Konsep dalam OOP di mana subclass dapat menggantikan superclass tanpa mengubah kebenaran program disebut...",
+   opts:["Encapsulation","Polymorphism","Liskov Substitution Principle","Abstraction"],
+   ans:2, exp:"Liskov Substitution Principle (LSP) dikemukakan Barbara Liskov: objek subtype harus dapat menggantikan objek supertypenya tanpa mengubah kebenaran program. Melanggar LSP berarti inheritance digunakan secara tidak tepat.", tip:"LSP: anak (subclass) harus bisa 'menggantikan' induk (superclass) tanpa error."},
+
+  // ── TOPIK 5: Pengujian Software ──
+  {topic:"Pengujian Software", type:"pilihan",
+   q:"Jenis pengujian yang menguji setiap unit/modul secara terisolasi tanpa bergantung pada modul lain disebut...",
+   opts:["Integration Testing","System Testing","Unit Testing","Acceptance Testing"],
+   ans:2, exp:"Unit Testing menguji unit terkecil dari software (fungsi, metode, kelas) secara terisolasi. Biasanya dilakukan oleh developer menggunakan framework seperti JUnit (Java), pytest (Python), atau NUnit (.NET). Unit test yang baik bersifat FIRST: Fast, Isolated, Repeatable, Self-validating, Timely.", tip:"Unit Test = tes terkecil, terisolasi, dilakukan developer."},
+
+  {topic:"Pengujian Software", type:"benar",
+   q:"Black-box testing menguji software dengan mempertimbangkan struktur internal dan kode program.",
+   ans:false, exp:"Black-box testing (behavioral testing) menguji software TANPA melihat struktur internal. Penguji hanya fokus pada input dan output yang diharapkan. Sebaliknya, White-box testing (structural testing) menguji dengan melihat kode internal. Black-box = kotak hitam = tidak melihat isi.", tip:"Black-box = tes input/output tanpa lihat kode. White-box = lihat kode internal."},
+
+  {topic:"Pengujian Software", type:"pilihan",
+   q:"Teknik black-box testing yang membagi domain input ke dalam kelas-kelas ekuivalen adalah...",
+   opts:["Boundary Value Analysis","Equivalence Partitioning","Decision Table Testing","State Transition Testing"],
+   ans:1, exp:"Equivalence Partitioning membagi input menjadi kelas-kelas ekuivalen di mana semua nilai dalam satu kelas diperlakukan sama oleh sistem. Jika satu nilai dalam kelas tersebut lolos/gagal, semua nilai dalam kelas itu diasumsikan berperilaku sama.", tip:"Equivalence Partitioning: grup nilai yang 'diperlakukan sama' → test satu perwakilan per grup."},
+
+  {topic:"Pengujian Software", type:"pilihan",
+   q:"Pengujian yang dilakukan oleh pengguna akhir untuk memvalidasi apakah software memenuhi kebutuhan bisnis disebut...",
+   opts:["Alpha Testing","Beta Testing","User Acceptance Testing (UAT)","Regression Testing"],
+   ans:2, exp:"UAT (User Acceptance Testing) adalah fase terakhir pengujian sebelum go-live. Dilakukan oleh user/stakeholder untuk memastikan sistem memenuhi kebutuhan bisnis yang telah disepakati. UAT berbeda dari Alpha/Beta testing dalam hal tujuan dan pelaksananya.", tip:"UAT = uji penerimaan pengguna = validasi terakhir sebelum software diluncurkan."},
+
+  {topic:"Pengujian Software", type:"benar",
+   q:"Regression testing dilakukan untuk memastikan bahwa perubahan atau perbaikan bug tidak merusak fungsionalitas yang sebelumnya bekerja dengan baik.",
+   ans:true, exp:"Regression testing adalah pengujian ulang yang dilakukan setelah ada perubahan kode (bug fix, new feature, refactoring) untuk memastikan tidak ada fungsi yang 'regresi' (mundur/rusak). Sangat penting dalam CI/CD pipeline untuk mendeteksi regression secara otomatis.", tip:"Regression = 'mundur'. Regression test = pastikan tidak ada yang 'mundur' setelah perubahan."},
+
+  {topic:"Pengujian Software", type:"pilihan",
+   q:"Metrik kualitas software yang mengukur seberapa besar kode sumber yang dieksekusi saat pengujian adalah...",
+   opts:["Test Effectiveness","Code Coverage","Defect Density","Mean Time Between Failures"],
+   ans:1, exp:"Code Coverage mengukur persentase kode yang dieksekusi selama testing. Jenis coverage: statement coverage, branch coverage, path coverage, function coverage. Coverage tinggi tidak menjamin tidak ada bug, tetapi coverage rendah menunjukkan area yang belum diuji.", tip:"Code Coverage = % kode yang 'tersentuh' saat tes berjalan."},
+
+  // ── TOPIK 6: Manajemen Konfigurasi ──
+  {topic:"Manajemen Konfigurasi", type:"pilihan",
+   q:"Aktivitas manajemen konfigurasi software yang bertugas mengidentifikasi, mengorganisasi, dan mengendalikan modifikasi software disebut...",
+   opts:["Software Quality Assurance","Software Configuration Management (SCM)","Software Project Management","Software Release Management"],
+   ans:1, exp:"SCM (Software Configuration Management) adalah disiplin yang mengidentifikasi konfigurasi software pada berbagai titik waktu, mengendalikan perubahan secara sistematis, dan memelihara integritas dan traceability konfigurasi sepanjang siklus hidup sistem.", tip:"SCM = manajemen 'versi dan perubahan' software secara sistematis."},
+
+  {topic:"Manajemen Konfigurasi", type:"benar",
+   q:"Version control system seperti Git memungkinkan multiple developer bekerja pada codebase yang sama secara bersamaan.",
+   ans:true, exp:"Version control system (VCS) seperti Git, SVN, Mercurial memungkinkan kolaborasi tim. Git dengan konsep branching dan merging memungkinkan developer bekerja paralel di branch berbeda, kemudian menggabungkan perubahan melalui pull request/merge request.", tip:"Git = memungkinkan kerja paralel melalui branching dan merging."},
+
+  {topic:"Manajemen Konfigurasi", type:"pilihan",
+   q:"Dalam SCM, 'baseline' didefinisikan sebagai...",
+   opts:["Kode sumber awal sebelum dikembangkan","Spesifikasi atau produk yang telah direviu dan disetujui, menjadi dasar pengembangan selanjutnya","Versi terbaru dari software","Konfigurasi hardware minimum untuk menjalankan software"],
+   ans:1, exp:"Baseline dalam SCM adalah titik referensi yang telah disetujui secara formal. Perubahan dari baseline memerlukan prosedur formal (change control). Ada berbagai jenis baseline: functional baseline (dari SRR), allocated baseline (dari PDR), product baseline (dari TRR).", tip:"Baseline = 'garis dasar' resmi yang disetujui, perubahan harus melalui proses formal."},
+
+  // ── TOPIK 7: Pemeliharaan Software ──
+  {topic:"Pemeliharaan Software", type:"pilihan",
+   q:"Jenis pemeliharaan software yang dilakukan untuk mencegah masalah di masa depan dan meningkatkan maintainability disebut...",
+   opts:["Corrective Maintenance","Adaptive Maintenance","Perfective Maintenance","Preventive Maintenance"],
+   ans:3, exp:"Preventive Maintenance bertujuan mencegah kegagalan di masa depan melalui refactoring, optimisasi kode, peningkatan dokumentasi, dll. Berbeda dengan Corrective (perbaikan bug), Adaptive (penyesuaian lingkungan), dan Perfective (peningkatan fitur).", tip:"4 jenis pemeliharaan: Corrective (perbaiki), Adaptive (sesuaikan), Perfective (tingkatkan), Preventive (cegah)."},
+
+  {topic:"Pemeliharaan Software", type:"benar",
+   q:"Biaya pemeliharaan software biasanya lebih rendah dari biaya pengembangan awal software.",
+   ans:false, exp:"Secara statistik, biaya pemeliharaan software bisa mencapai 60-80% dari total biaya siklus hidup software. Pemeliharaan mencakup perbaikan bug, adaptasi terhadap perubahan lingkungan, peningkatan fungsionalitas, dan dokumentasi — berlangsung selama software digunakan.", tip:"Maintenance = 60-80% total biaya software. Jauh lebih besar dari pengembangan awal!"},
+
+  {topic:"Pemeliharaan Software", type:"pilihan",
+   q:"Aktivitas mengubah struktur internal software tanpa mengubah perilaku eksternalnya untuk meningkatkan kualitas kode disebut...",
+   opts:["Refactoring","Reengineering","Reverse Engineering","Restructuring"],
+   ans:0, exp:"Refactoring adalah teknik untuk memperbaiki desain kode yang sudah ada tanpa mengubah fungsionalitasnya. Contoh: Extract Method, Rename Variable, Remove Duplicate Code. Martin Fowler dalam bukunya 'Refactoring' mendokumentasikan ratusan teknik refactoring.", tip:"Refactoring = ubah 'bagaimana' kode ditulis, tanpa ubah 'apa' yang dilakukan kode."},
+
+  // ── TOPIK 8: Kualitas Software ──
+  {topic:"Kualitas Software", type:"pilihan",
+   q:"Model kualitas software yang mendefinisikan 6 karakteristik utama kualitas (functionality, reliability, usability, efficiency, maintainability, portability) adalah...",
+   opts:["CMMI","ISO 9126","IEEE 730","Six Sigma"],
+   ans:1, exp:"ISO/IEC 9126 mendefinisikan model kualitas software dengan 6 karakteristik utama: Functionality, Reliability, Usability, Efficiency, Maintainability, dan Portability (mudah diingat: FRUEMP). Model ini kemudian diperbarui menjadi ISO/IEC 25010 (SQuaRE).", tip:"ISO 9126: F-R-U-E-M-P = Functionality, Reliability, Usability, Efficiency, Maintainability, Portability."},
+
+  {topic:"Kualitas Software", type:"benar",
+   q:"Software Quality Assurance (SQA) hanya dilakukan pada akhir fase pengembangan sebelum software dirilis.",
+   ans:false, exp:"SQA adalah aktivitas yang berlangsung sepanjang seluruh SDLC, bukan hanya di akhir. SQA mencakup review persyaratan, audit desain, code review, testing, dan proses improvement. Pendekatan 'quality built-in' jauh lebih efektif daripada 'quality tested-in'.", tip:"SQA bukan aktivitas akhir — dilakukan sepanjang SELURUH SDLC."},
+
+  {topic:"Kualitas Software", type:"pilihan",
+   q:"Tingkat CMMI yang menyatakan bahwa proses pengembangan software telah terdefinisi, terdokumentasi, dan dipahami secara organisasi adalah...",
+   opts:["Level 1 (Initial)","Level 2 (Managed)","Level 3 (Defined)","Level 4 (Quantitatively Managed)"],
+   ans:2, exp:"CMMI Level 3 (Defined) menandakan organisasi memiliki proses standar yang terdokumentasi dan digunakan di seluruh proyek. Proses disesuaikan dari standar organisasi untuk proyek individual. Ini merupakan tingkatan penting menuju manajemen berbasis data.", tip:"CMMI L3 Defined = proses STANDAR organisasi yang terdokumentasi dan digunakan semua tim."},
+
+  // ── TOPIK 9: Rekayasa Software Berorientasi Objek ──
+  {topic:"OOP & Rekayasa Software", type:"pilihan",
+   q:"Prinsip OOP yang memungkinkan satu interface digunakan untuk berbagai tipe objek berbeda disebut...",
+   opts:["Encapsulation","Inheritance","Polymorphism","Abstraction"],
+   ans:2, exp:"Polymorphism (dari bahasa Yunani: 'banyak bentuk') memungkinkan objek dari kelas berbeda merespons pesan yang sama dengan cara berbeda. Ada dua jenis: compile-time polymorphism (method overloading) dan runtime polymorphism (method overriding).", tip:"Polymorphism = satu antarmuka, banyak implementasi. 'Poly' = banyak, 'morph' = bentuk."},
+
+  {topic:"OOP & Rekayasa Software", type:"benar",
+   q:"Encapsulation dalam OOP adalah praktik menyembunyikan detail implementasi internal dan hanya mengekspos interface yang diperlukan.",
+   ans:true, exp:"Encapsulation adalah salah satu pilar OOP. Dengan encapsulation, data (atribut) dan perilaku (metode) dibungkus dalam satu unit (class), dan akses ke detail internal dikontrol melalui access modifier (private, protected, public). Ini melindungi integritas data.", tip:"Encapsulation = data + method dalam satu class, detail internal disembunyikan."},
+
+  {topic:"OOP & Rekayasa Software", type:"pilihan",
+   q:"Dalam UML, hubungan 'composition' berbeda dari 'aggregation' karena...",
+   opts:["Composition menunjukkan hubungan antar class berbeda tipe","Dalam composition, child tidak dapat berdiri sendiri tanpa parent","Aggregation lebih kuat dari composition","Composition hanya digunakan di diagram sequence"],
+   ans:1, exp:"Perbedaan kunci: Composition = hubungan 'bagian dari' yang kuat (strong ownership) — child tidak bisa eksis tanpa parent. Aggregation = hubungan 'bagian dari' yang lemah (weak ownership) — child dapat eksis secara independen. Contoh: Ruangan adalah bagian dari Gedung (composition); Mahasiswa adalah bagian dari Klub (aggregation).", tip:"Composition = anak TIDAK bisa hidup tanpa induk. Aggregation = anak BISA hidup tanpa induk."},
+
+  // ── TOPIK 10: Manajemen Proyek Software ──
+  {topic:"Manajemen Proyek", type:"pilihan",
+   q:"Teknik estimasi software yang menggunakan ukuran fungsional dari perspektif pengguna, berdasarkan input, output, file logis, antarmuka, dan query adalah...",
+   opts:["COCOMO","Function Point Analysis","Story Points","Use Case Points"],
+   ans:1, exp:"Function Point Analysis (FPA) dikembangkan Albrecht (IBM, 1979) mengukur ukuran software berdasarkan perspektif fungsional pengguna. Menghitung 5 komponen: External Input (EI), External Output (EO), External Inquiry (EQ), Internal Logical File (ILF), External Interface File (EIF).", tip:"FPA = ukur fungsi dari perspektif user, bukan baris kode."},
+
+  {topic:"Manajemen Proyek", type:"benar",
+   q:"Critical Path Method (CPM) dalam manajemen proyek mengidentifikasi jalur terpanjang dalam jaringan proyek yang menentukan durasi minimum proyek.",
+   ans:true, exp:"CPM mengidentifikasi critical path — rangkaian aktivitas yang jika tertunda akan menunda keseluruhan proyek. Aktivitas di luar critical path memiliki 'float' (slack) — waktu toleransi keterlambatan tanpa memengaruhi deadline proyek.", tip:"Critical Path = jalur terpanjang = durasi minimum proyek. Terlambat di sini = proyek terlambat."},
+
+  {topic:"Manajemen Proyek", type:"pilihan",
+   q:"Dokumen yang mendefinisikan scope, tujuan, deliverable, dan timeline proyek software secara formal disebut...",
+   opts:["Business Case","Project Charter","Statement of Work","Risk Register"],
+   ans:1, exp:"Project Charter adalah dokumen formal yang mengesahkan proyek dan memberikan wewenang kepada project manager. Mencakup: tujuan proyek, scope, stakeholder, anggaran awal, dan milestone utama. Project Charter ditandatangani sponsor proyek.", tip:"Project Charter = 'akta kelahiran' proyek: formal, ditandatangani sponsor."},
+
+  // ── TOPIK 11: Keamanan Software ──
+  {topic:"Keamanan Software", type:"pilihan",
+   q:"Serangan keamanan yang memasukkan kode berbahaya melalui input yang tidak tervalidasi ke dalam query database disebut...",
+   opts:["Cross-Site Scripting (XSS)","SQL Injection","Buffer Overflow","Man-in-the-Middle"],
+   ans:1, exp:"SQL Injection terjadi ketika input user yang tidak disanitasi disisipkan langsung ke dalam query SQL, memungkinkan penyerang memanipulasi query. Contoh klasik: input '1 OR 1=1' bisa mem-bypass autentikasi. Pencegahan: parameterized queries/prepared statements.", tip:"SQL Injection = kode jahat melalui input → masuk ke query database."},
+
+  {topic:"Keamanan Software", type:"benar",
+   q:"Prinsip 'Principle of Least Privilege' menyatakan bahwa setiap komponen sistem harus memiliki akses minimum yang diperlukan untuk menjalankan fungsinya.",
+   ans:true, exp:"Principle of Least Privilege (PoLP) adalah konsep keamanan fundamental: berikan hanya hak akses minimal yang diperlukan untuk menyelesaikan tugas. Membatasi damage jika terjadi compromise. Diterapkan pada user accounts, aplikasi, sistem, dan proses.", tip:"PoLP = akses minimal = batasi kerusakan jika terjadi pelanggaran keamanan."},
+
+  {topic:"Keamanan Software", type:"pilihan",
+   q:"Dalam konteks keamanan software, CIA Triad merujuk pada...",
+   opts:["Coding, Integration, Analysis","Confidentiality, Integrity, Availability","Control, Inspection, Audit","Compliance, Implementation, Assessment"],
+   ans:1, exp:"CIA Triad adalah model keamanan informasi fundamental: Confidentiality (kerahasiaan — informasi hanya dapat diakses yang berwenang), Integrity (integritas — informasi tidak dimodifikasi tanpa izin), Availability (ketersediaan — informasi tersedia saat diperlukan).", tip:"CIA Triad Keamanan: Confidentiality + Integrity + Availability."},
+
+  // ── TOPIK 12: Dokumentasi Software ──
+  {topic:"Dokumentasi Software", type:"pilihan",
+   q:"Dokumentasi yang menjelaskan cara menginstal, mengkonfigurasi, dan menggunakan software dari perspektif pengguna akhir adalah...",
+   opts:["Technical Documentation","API Documentation","User Manual","Architecture Document"],
+   ans:2, exp:"User Manual (panduan pengguna) ditujukan untuk end-user non-teknis. Menjelaskan cara penggunaan software, fitur-fitur yang tersedia, dan pemecahan masalah umum. Berbeda dari Technical Documentation yang ditujukan untuk developer/administrator.", tip:"User Manual = untuk pengguna akhir. Technical Doc = untuk developer/admin."},
+
+  {topic:"Dokumentasi Software", type:"benar",
+   q:"Javadoc adalah alat yang dapat menghasilkan dokumentasi API secara otomatis dari komentar khusus dalam kode sumber Java.",
+   ans:true, exp:"Javadoc memproses komentar berformat khusus (/** ... */) dalam kode Java untuk menghasilkan dokumentasi HTML. Tag seperti @param, @return, @throws, @author membantu mendokumentasikan metode dan kelas secara sistematis langsung dari kode sumber.", tip:"Javadoc = dokumentasi dari komentar kode Java → generate HTML otomatis."},
+
+  // ── TOPIK 13: Rekayasa Software Modern ──
+  {topic:"Software Modern & DevOps", type:"pilihan",
+   q:"Praktik DevOps yang menggabungkan integrasi kode secara otomatis dan pengujian setiap kali developer melakukan commit disebut...",
+   opts:["Continuous Deployment","Continuous Integration (CI)","Continuous Delivery","Feature Branching"],
+   ans:1, exp:"Continuous Integration (CI) adalah praktik di mana developer melakukan merge kode ke shared repository secara sering (minimal sekali sehari), diikuti automated build dan test. Tujuannya: mendeteksi integration error sedini mungkin. Tools: Jenkins, GitHub Actions, GitLab CI.", tip:"CI = merge kode → auto build → auto test → deteksi masalah lebih awal."},
+
+  {topic:"Software Modern & DevOps", type:"benar",
+   q:"Microservices architecture membagi aplikasi menjadi layanan-layanan kecil yang independen, masing-masing dapat di-deploy dan di-scale secara terpisah.",
+   ans:true, exp:"Microservices adalah gaya arsitektur yang memecah aplikasi monolitik menjadi layanan-layanan kecil yang loosely coupled, masing-masing dengan tanggung jawab spesifik, berjalan dalam proses terpisah, dan berkomunikasi via API (biasanya REST atau message queue).", tip:"Microservices = banyak layanan kecil independen vs. satu monolith besar."},
+
+  {topic:"Software Modern & DevOps", type:"pilihan",
+   q:"Container technology seperti Docker memberikan keunggulan dalam pengembangan software terutama karena...",
+   opts:["Menggunakan lebih banyak resource dibanding virtual machine","Menyelesaikan masalah 'works on my machine' dengan konsistensi environment","Menggantikan sistem operasi server","Hanya dapat digunakan untuk aplikasi web"],
+   ans:1, exp:"Docker containers mengemas aplikasi beserta dependensinya dalam unit portabel yang berjalan konsisten di berbagai environment (development, staging, production). Ini menyelesaikan masalah klasik 'works on my machine' karena environment terisolasi dan reproducible.", tip:"Docker = paket aplikasi + dependensi = konsisten di semua environment."},
+
+  // ── TOPIK 14: Arsitektur Software ──
+  {topic:"Arsitektur Software", type:"pilihan",
+   q:"Pola arsitektur yang memisahkan sistem menjadi layer-layer di mana setiap layer hanya berkomunikasi dengan layer di atasnya dan di bawahnya disebut...",
+   opts:["Microservices Architecture","Event-Driven Architecture","Layered (N-Tier) Architecture","Service-Oriented Architecture (SOA)"],
+   ans:2, exp:"Layered Architecture (N-Tier) mengorganisir sistem dalam lapisan horizontal: Presentation Layer (UI), Business Logic Layer, Data Access Layer, Database. Setiap layer memiliki tanggung jawab spesifik dan hanya berinteraksi dengan layer yang berdekatan. Contoh 3-tier: Presentation-Business-Data.", tip:"Layered/N-Tier = lapisan horizontal, setiap layer punya tanggung jawab sendiri."},
+
+  {topic:"Arsitektur Software", type:"benar",
+   q:"REST (Representational State Transfer) adalah arsitektur berbasis SOAP yang menggunakan format XML untuk komunikasi antar sistem.",
+   ans:false, exp:"REST bukan berbasis SOAP. REST adalah gaya arsitektur untuk distributed hypermedia systems yang biasanya menggunakan HTTP dan format JSON (meskipun bisa XML). REST bersifat stateless, menggunakan HTTP methods (GET, POST, PUT, DELETE), dan memiliki prinsip seperti uniform interface dan cacheable.", tip:"REST ≠ SOAP. REST = HTTP + JSON, stateless. SOAP = XML, memiliki standar formal."},
+
+  {topic:"Arsitektur Software", type:"pilihan",
+   q:"Dalam arsitektur client-server, komponen yang bertugas menyediakan layanan atau sumber daya yang diminta komponen lain disebut...",
+   opts:["Client","Server","Router","Gateway"],
+   ans:1, exp:"Server adalah komponen yang menyediakan layanan, data, atau sumber daya kepada client yang memintanya. Server mendengarkan request dari client pada port tertentu, memproses request, dan mengembalikan response. Server dapat melayani multiple client secara bersamaan.", tip:"Client = peminta layanan. Server = penyedia layanan."},
+
+  // ── TOPIK 15: Proses & Metrik Software ──
+  {topic:"Metrik & Proses", type:"pilihan",
+   q:"Metrik software yang mengukur kompleksitas logika program berdasarkan jumlah jalur independen dalam kode adalah...",
+   opts:["Lines of Code (LOC)","Cyclomatic Complexity","Halstead Metrics","Function Points"],
+   ans:1, exp:"Cyclomatic Complexity dikembangkan oleh Thomas McCabe (1976). Mengukur kompleksitas kode berdasarkan jumlah independent paths melalui source code. Rumus: M = E - N + 2P (E=edges, N=nodes, P=connected components). CC > 10 dianggap terlalu kompleks dan sulit diuji.", tip:"Cyclomatic Complexity = jumlah jalur independen = ukuran kompleksitas kode."},
+
+  {topic:"Metrik & Proses", type:"benar",
+   q:"Velocity dalam Scrum mengukur jumlah story points yang berhasil diselesaikan tim dalam satu sprint.",
+   ans:true, exp:"Velocity adalah metrik Scrum yang mengukur rata-rata story points yang diselesaikan per sprint. Digunakan untuk perencanaan sprint mendatang dan estimasi kapan product backlog dapat diselesaikan. Velocity harus dihitung dari data historis tim yang sama.", tip:"Velocity Scrum = story points selesai per sprint = tolak ukur kapasitas tim."},
+
+  {topic:"Metrik & Proses", type:"pilihan",
+   q:"Dalam konteks software process improvement, PDCA (Plan-Do-Check-Act) cycle sering dikaitkan dengan...",
+   opts:["Metodologi waterfall","Continuous improvement (Kaizen)","Extreme Programming","Scrum ceremonies"],
+   ans:1, exp:"PDCA (Deming Cycle) adalah metodologi iteratif untuk continuous improvement. Plan (rencanakan perubahan), Do (implementasikan dalam skala kecil), Check (evaluasi hasil), Act (standardisasi jika berhasil / perbaiki jika gagal). Konsep ini fundamental dalam Total Quality Management dan ISO 9001.", tip:"PDCA = siklus perbaikan berkelanjutan: Rencanakan → Lakukan → Periksa → Tindak."},
+
+  // ── BONUS SOAL ESAI MINI ──
+  {topic:"Konsep Dasar Software", type:"esai",
+   q:"Jelaskan perbedaan antara Software Engineering dan Computer Science, serta mengapa Software Engineering dianggap sebagai disiplin tersendiri!",
+   keyPoints:["Computer Science lebih berfokus pada teori, algoritma, dan fondasi matematis komputasi","Software Engineering berfokus pada penerapan prinsip teknik untuk pengembangan software skala besar yang andal","SE melibatkan aspek manajemen, proses, kualitas, dan tim — bukan hanya coding","SE menghadapi tantangan 'wicked problems': kebutuhan yang ambigu dan berubah","Dijkstra dan Brooks berkontribusi pada fondasi SE sebagai disiplin ilmu"],
+   modelAns:"Computer Science (CS) berfokus pada teori komputasi, algoritma, dan struktur data — 'ilmu' di balik komputer. Software Engineering (SE) adalah penerapan prinsip-prinsip teknik pada pengembangan software skala besar: sistematis, terukur, dapat dipelihara. SE muncul sebagai respons terhadap 'software crisis' tahun 1960-an ketika proyek besar sering gagal, melebihi anggaran, atau tidak memenuhi kebutuhan."},
+
+  {topic:"Pengujian Software", type:"esai",
+   q:"Mengapa pengujian software tidak dapat membuktikan bahwa program bebas dari kesalahan? Jelaskan konsep ini dengan contoh!",
+   keyPoints:["Dijkstra: testing dapat menunjukkan keberadaan bug, bukan ketiadaannya","Jumlah kombinasi input pada program nyata tidak terbatas (practically infinite)","Exhaustive testing tidak praktis dilakukan","Testing bertujuan mengurangi risiko, bukan mengeliminasi semua bug","Strategi: prioritaskan test berdasarkan risiko bisnis"],
+   modelAns:"Edsger Dijkstra pernah menyatakan: 'Testing can show the presence of bugs, but not their absence.' Untuk program sederhana dengan 2 input integer, sudah ada miliaran kombinasi yang mustahil diuji semua. Testing bertujuan meminimalisir risiko — bukan mencapai '0 bug' yang tidak realistis."},
+
+  {topic:"Manajemen Proyek", type:"esai",
+   q:"Apa yang dimaksud dengan 'Brooks' Law' dalam manajemen proyek software dan bagaimana implikasinya dalam praktik?",
+   keyPoints:["Brooks' Law: menambah developer ke proyek yang terlambat akan membuatnya semakin terlambat","Fred Brooks merumuskan ini dalam 'The Mythical Man-Month' (1975)","Alasan: onboarding cost, peningkatan kompleksitas komunikasi, dan training time","Komunikasi overhead meningkat dengan O(n²) saat tim bertambah","Solusi alternatif: rescoping, overtime terkontrol, atau penjadwalan ulang"],
+   modelAns:"Fred Brooks dalam 'The Mythical Man-Month' (1975) merumuskan: 'Adding manpower to a late software project makes it later.' Menambah developer baru memerlukan waktu onboarding, meningkatkan overhead komunikasi (O(n²)), dan mengganggu fokus developer lama. Implikasi praktis: mencegah keterlambatan lebih baik daripada 'menambah orang' sebagai solusi darurat."},
+
+  // ── SOAL TAMBAHAN ──
+  {topic:"SDLC", type:"pilihan",
+   q:"Dalam metodologi Agile, 'sprint retrospective' bertujuan untuk...",
+   opts:["Merencanakan pekerjaan untuk sprint berikutnya","Menampilkan hasil sprint kepada stakeholder","Merefleksikan proses dan mengidentifikasi peningkatan untuk tim","Mereview product backlog"],
+   ans:2, exp:"Sprint Retrospective adalah seremonial Scrum yang diadakan setelah Sprint Review. Tim mendiskusikan: apa yang berjalan baik, apa yang perlu diperbaiki, dan action items konkret untuk sprint berikutnya. Fokus pada PROSES tim, bukan produk.", tip:"Retrospective = refleksi tim tentang HOW they work, bukan WHAT they built."},
+
+  {topic:"Rekayasa Kebutuhan", type:"pilihan",
+   q:"Format user story yang paling umum digunakan dalam Agile adalah...",
+   opts:["Sebagai [siapa], saya ingin [apa], sehingga [mengapa]","Sistem harus [fungsi] ketika [kondisi]","Pengguna dapat [aksi] dengan menggunakan [fitur]","Input: [data], Proses: [logika], Output: [hasil]"],
+   ans:0, exp:"Format 'As a [role], I want [feature], so that [benefit]' adalah format user story standar. Format ini memastikan setiap kebutuhan dikontekstualisasikan dengan SIAPA yang membutuhkan (role), APA yang diinginkan (feature), dan MENGAPA (value/benefit).", tip:"User story: As a [who] I want [what] so that [why] — selalu ada konteks dan nilai bisnis."},
+
+  {topic:"Desain Software", type:"pilihan",
+   q:"Design Pattern 'Observer' termasuk dalam kategori...",
+   opts:["Creational Pattern","Structural Pattern","Behavioral Pattern","Architectural Pattern"],
+   ans:2, exp:"Observer Pattern termasuk Behavioral Pattern (pola perilaku). Observer mendefinisikan dependensi one-to-many antara objek, sehingga ketika satu objek berubah, semua dependennya diberitahu secara otomatis. Digunakan dalam event handling, MVC, reactive programming.", tip:"GoF Design Patterns: Creational (pembuatan), Structural (struktur), Behavioral (perilaku). Observer = Behavioral."},
+
+  {topic:"Kualitas Software", type:"pilihan",
+   q:"Metode review kode formal di mana penulis kode mempresentasikan kode kepada tim reviewer disebut...",
+   opts:["Walkthrough","Inspection","Pair Programming","Code Audit"],
+   ans:0, exp:"Walkthrough adalah review informal di mana penulis kode (author) memimpin tim melalui material. Berbeda dari Inspection (Fagan Inspection) yang lebih formal dengan roles khusus (moderator, reader, inspector, recorder) dan mengikuti prosedur ketat.", tip:"Walkthrough = penulis pimpin review (informal). Inspection = proses formal dengan roles."},
+
+  {topic:"OOP & Rekayasa Software", type:"pilihan",
+   q:"Interface dalam Java berbeda dengan Abstract Class karena...",
+   opts:["Interface dapat memiliki constructor","Interface mendukung multiple implementation, sedangkan class hanya single inheritance","Abstract Class tidak dapat memiliki metode konkret","Interface lebih lambat dari Abstract Class"],
+   ans:1, exp:"Perbedaan kunci: Java interface mendukung multiple implementation (satu class bisa implement banyak interface), sedangkan class hanya mendukung single inheritance. Ini menyelesaikan 'diamond problem' warisan ganda. Sejak Java 8, interface dapat memiliki default methods.", tip:"Interface = kontrak + multiple implementation. Abstract Class = blueprint + single inheritance."},
+
+  {topic:"Keamanan Software", type:"pilihan",
+   q:"Teknik pengujian keamanan yang mensimulasikan serangan nyata terhadap sistem untuk menemukan kerentanan disebut...",
+   opts:["Vulnerability Assessment","Penetration Testing","Security Audit","Threat Modeling"],
+   ans:1, exp:"Penetration Testing (pentest) adalah uji keamanan di mana 'ethical hacker' secara aktif mencoba mengeksploitasi kerentanan sistem, seperti yang dilakukan penyerang nyata. Berbeda dari vulnerability assessment yang hanya mengidentifikasi kerentanan tanpa mengeksploitasinya.", tip:"Pentest = simulasi serangan nyata oleh 'hacker etis' untuk temukan celah keamanan."},
+
+  {topic:"Software Modern & DevOps", type:"pilihan",
+   q:"Infrastructure as Code (IaC) adalah praktik...",
+   opts:["Menulis kode untuk kebutuhan infrastruktur dalam user story","Mengelola dan menyediakan infrastruktur menggunakan file konfigurasi yang dapat diversi seperti kode","Mengotomatiskan deployment aplikasi ke cloud","Menulis kode yang dapat berjalan di berbagai platform hardware"],
+   ans:1, exp:"IaC adalah pendekatan di mana infrastruktur (server, jaringan, database) didefinisikan sebagai kode (biasanya YAML atau HCL) dan dikelola dengan tools seperti Terraform, Ansible, atau AWS CloudFormation. Infrastruktur menjadi reproducible, versionable, dan dapat direview.", tip:"IaC = infrastruktur = kode = bisa di-version, di-review, di-automate."},
+
+  {topic:"Arsitektur Software", type:"benar",
+   q:"API Gateway dalam arsitektur microservices berfungsi sebagai single entry point yang menangani routing, autentikasi, rate limiting, dan load balancing.",
+   ans:true, exp:"API Gateway adalah komponen arsitektural yang bertindak sebagai 'pintu gerbang tunggal' untuk semua client request dalam microservices. Mengkonsolidasikan fungsi cross-cutting: routing ke service yang tepat, autentikasi, otorisasi, rate limiting, load balancing, dan logging.", tip:"API Gateway = gerbang tunggal microservices: routing + auth + rate limit + load balance."},
+
+  {topic:"Metrik & Proses", type:"pilihan",
+   q:"Technical Debt dalam konteks software development mengacu pada...",
+   opts:["Biaya lisesi software yang belum dibayar","Akumulasi 'shortcut' atau keputusan desain yang kurang optimal yang harus 'dibayar kembali' di masa depan","Jumlah bug yang belum diperbaiki","Fitur yang dijanjikan namun belum diimplementasikan"],
+   ans:1, exp:"Technical Debt (diperkenalkan Ward Cunningham) adalah metafora untuk akumulasi keputusan desain atau implementasi yang kurang optimal demi kemudahan jangka pendek — yang harus 'dibayar' dengan refactoring di masa depan. Semakin lama dibiarkan, semakin tinggi 'bunganya'.", tip:"Technical Debt = 'jalan pintas' sekarang = utang yang harus dibayar nanti (+ bunga)."},
+
+  {topic:"Konsep Dasar Software", type:"pilihan",
+   q:"Software yang tertanam di dalam perangkat keras dan mengontrol fungsi-fungsi spesifik perangkat (seperti firmware pada router atau printer) disebut...",
+   opts:["System Software","Application Software","Embedded Software","Middleware"],
+   ans:2, exp:"Embedded software (firmware) adalah software yang tertanam dalam perangkat keras untuk mengontrol fungsi spesifik. Biasanya ditulis dalam C atau Assembly, berjalan pada microcontroller/microprocessor dengan resource terbatas. Contoh: firmware router, software di lift, ABS pada kendaraan.", tip:"Embedded software = software dalam hardware = firmware = kontrol fungsi spesifik perangkat."},
+
+  {topic:"SDLC", type:"pilihan",
+   q:"Apa yang dimaksud dengan 'time-boxing' dalam konteks Agile/Scrum?",
+   opts:["Menjadwalkan meeting dalam slot waktu tertentu","Menetapkan durasi tetap untuk sebuah aktivitas atau iterasi, apapun statusnya","Menghitung total waktu yang dihabiskan dalam proyek","Alokasi waktu berdasarkan prioritas fitur"],
+   ans:1, exp:"Time-boxing adalah teknik manajemen waktu di mana durasi aktivitas ditetapkan terlebih dahulu dan TIDAK bisa diperpanjang. Sprint Scrum adalah contoh time-box. Jika pekerjaan belum selesai, sisa pekerjaan dikembalikan ke backlog, bukan sprint diperpanjang.", tip:"Time-box = durasi TETAP, tidak bisa diperpanjang. Sprint Scrum adalah time-box."},
+
+  {topic:"Rekayasa Kebutuhan", type:"pilihan",
+   q:"Matriks yang memetakan kebutuhan ke komponen desain, kode, dan test case untuk memastikan traceability disebut...",
+   opts:["Risk Matrix","Traceability Matrix","Decision Matrix","RACI Matrix"],
+   ans:1, exp:"Requirements Traceability Matrix (RTM) memetakan setiap requirement ke artefak yang terkait (desain, kode, test case). Memastikan setiap kebutuhan diimplementasikan dan diuji. Juga membantu impact analysis: jika requirement berubah, apa saja yang terpengaruh?", tip:"RTM = peta hubungan: requirement ↔ desain ↔ kode ↔ test case."},
+
+  {topic:"Desain Software", type:"pilihan",
+   q:"Prinsip 'Don't Repeat Yourself' (DRY) dalam software engineering berarti...",
+   opts:["Jangan menulis kode yang sama dua kali; abstraksi duplikasi","Tidak boleh menggunakan loop dalam kode","Setiap kelas harus unik namanya","Tidak boleh menggunakan template yang sudah ada"],
+   ans:0, exp:"DRY principle (Hunt & Thomas, 'The Pragmatic Programmer') menyatakan: 'Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.' Duplikasi kode meningkatkan maintenance burden — mengubah satu logika harus dilakukan di banyak tempat.", tip:"DRY = satu logika, satu tempat. Duplikasi kode = maintenance nightmare."},
+
+  {topic:"Pengujian Software", type:"pilihan",
+   q:"Dalam testing, 'test fixture' mengacu pada...",
+   opts:["Template dokumen test plan","Kondisi awal yang diperlukan sebelum test dapat dijalankan","Hardware khusus untuk pengujian","Laporan hasil test"],
+   ans:1, exp:"Test fixture adalah kumpulan pre-conditions (data, state, environment) yang diperlukan sebelum test dapat dieksekusi dengan konsisten. Dalam JUnit, fixture diatur dengan @BeforeEach dan @AfterEach. Fixture memastikan test environment yang reproducible.", tip:"Test fixture = persiapan kondisi sebelum tes berjalan = environment yang konsisten."},
+
+  {topic:"Manajemen Konfigurasi", type:"pilihan",
+   q:"Proses formal yang mengevaluasi dan menyetujui atau menolak permintaan perubahan terhadap software disebut...",
+   opts:["Change Advisory Board (CAB)","Code Review","Sprint Planning","Release Management"],
+   ans:0, exp:"Change Advisory Board (CAB) adalah komite yang bertanggung jawab mengevaluasi dan memberi otorisasi perubahan pada sistem IT/software. CAB mempertimbangkan risiko, dampak, dan prioritas setiap change request sebelum disetujui untuk implementasi.", tip:"CAB = 'dewan peninjau perubahan' — setiap perubahan harus melewati review resmi."},
+
+  {topic:"Pemeliharaan Software", type:"pilihan",
+   q:"Fenomena di mana software menjadi semakin sulit dipelihara seiring bertambahnya modifikasi karena meningkatnya kompleksitas disebut...",
+   opts:["Software Aging","Software Entropy","Technical Debt","Legacy Problem"],
+   ans:1, exp:"Software Entropy (mengacu pada konsep termodinamika) menggambarkan kecenderungan software untuk menjadi semakin tidak teratur dan kompleks seiring waktu jika tidak dirawat. Setiap perubahan tanpa refactoring meningkatkan entropy. Sering disebut juga 'software rot' atau 'code rot'.", tip:"Software Entropy = software makin 'kacau' tanpa perawatan → makin sulit dipelihara."},
+
+  {topic:"Kualitas Software", type:"pilihan",
+   q:"Dalam konteks pengujian software, 'defect density' diukur sebagai...",
+   opts:["Jumlah defect dibagi jumlah developer","Jumlah defect per unit ukuran software (misalnya per KLOC)","Persentase defect yang ditemukan saat testing","Waktu rata-rata untuk memperbaiki satu defect"],
+   ans:1, exp:"Defect Density = jumlah defect / ukuran software (biasanya per KLOC — Kilo Lines of Code, atau per Function Point). Metrik ini membantu membandingkan kualitas antar modul atau antar proyek. Defect density tinggi mengindikasikan area yang memerlukan perhatian lebih.", tip:"Defect Density = defect / KLOC = kepadatan cacat per unit ukuran kode."},
+
+  {topic:"Software Modern & DevOps", type:"pilihan",
+   q:"Dalam konteks Cloud Computing, 'serverless computing' berarti...",
+   opts:["Aplikasi berjalan tanpa menggunakan server sama sekali","Developer tidak perlu mengelola infrastruktur server; cloud provider yang menanganinya","Server disembunyikan dari pengguna akhir","Komputasi dilakukan di sisi client"],
+   ans:1, exp:"Serverless (FaaS - Function as a Service) bukan berarti tidak ada server, tapi developer tidak perlu mengelola, mengkonfigurasi, atau menskalakan server. Cloud provider (AWS Lambda, Azure Functions, GCP Cloud Functions) otomatis menangani infrastruktur, scaling, dan availability.", tip:"Serverless = server ADA, tapi developer tidak perlu mengurusnya. Cloud yang handle."},
+];
+
+// ─────────────────────────────────────────────
+// APP STATE
+// ─────────────────────────────────────────────
+const ALL_TOPICS = [...new Set(QUESTION_BANK.map(q => q.topic))];
+let state = {
+  questions: [],
+  current: 0,
+  correct: 0,
+  wrong: 0,
+  answered: false,
+  selectedTopic: 'all',
+  total: 10,
+  useAI: false,
+  aiQuestions: [],
+};
+
+// ─────────────────────────────────────────────
+// DOM INIT
+// ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  buildTopicFilter();
+  startSession();
+});
+
+function buildTopicFilter() {
+  const row = document.getElementById('topic-row');
+  const all = makeTopicBtn('Semua Topik', 'all', true);
+  row.appendChild(all);
+  ALL_TOPICS.forEach(t => row.appendChild(makeTopicBtn(t, t, false)));
+}
+
+function makeTopicBtn(label, val, active) {
+  const b = document.createElement('button');
+  b.className = 'topic-btn' + (active ? ' active' : '');
+  b.textContent = label;
+  b.dataset.val = val;
+  b.onclick = () => {
+    document.querySelectorAll('.topic-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.selectedTopic = val;
+    startSession();
+  };
+  return b;
+}
+
+// ─────────────────────────────────────────────
+// SESSION
+// ─────────────────────────────────────────────
+function startSession() {
+  let pool = state.selectedTopic === 'all'
+    ? [...QUESTION_BANK]
+    : QUESTION_BANK.filter(q => q.topic === state.selectedTopic);
+
+  // Shuffle
+  pool = pool.sort(() => Math.random() - .5);
+  state.questions = pool.slice(0, Math.min(10, pool.length));
+  state.current = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  state.answered = false;
+
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'block';
+  updateStats();
+  renderQuestion();
+}
+
+function updateStats() {
+  const t = state.questions.length;
+  const done = state.correct + state.wrong;
+  const pct = done > 0 ? Math.round(state.correct/done*100) : '–';
+  document.getElementById('stat-q').textContent = `${done}/${t}`;
+  document.getElementById('stat-c').textContent = state.correct;
+  document.getElementById('stat-w').textContent = state.wrong;
+  document.getElementById('stat-s').textContent = pct === '–' ? '–' : pct + '%';
+  // progress bar
+  document.getElementById('prog-fill').style.width = (t > 0 ? (done/t*100) : 0) + '%';
+  document.getElementById('prog-label').textContent = `${done} / ${t}`;
+  document.getElementById('prog-pct').textContent = (t > 0 ? Math.round(done/t*100) : 0) + '%';
+}
+
+// ─────────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────────
+function renderQuestion() {
+  const qa = document.getElementById('quiz-area');
+  if (state.current >= state.questions.length) {
+    showResult(); return;
+  }
+  const q = state.questions[state.current];
+  state.answered = false;
+
+  const typeLabel = { pilihan: 'Pilihan Ganda', benar: 'Benar / Salah', esai: 'Uraian Singkat' };
+  const typeClass = { pilihan: 'pilihan', benar: 'benar', esai: 'esai' };
+
+  let inputHTML = '';
+  if (q.type === 'pilihan') {
+    const opts = q.opts.map((o, i) => {
+      const letters = ['A','B','C','D'];
+      return `<button class="option-btn" onclick="checkPilihan(this,${i})" data-idx="${i}">
+        <span class="opt-letter">${letters[i]}</span><span>${o}</span>
+      </button>`;
+    }).join('');
+    inputHTML = `<div class="options">${opts}</div>`;
+  } else if (q.type === 'benar') {
+    inputHTML = `<div class="tf-row">
+      <button class="tf-btn true-btn" onclick="checkTF(this,true)">✓ Benar</button>
+      <button class="tf-btn false-btn" onclick="checkTF(this,false)">✗ Salah</button>
+    </div>`;
+  } else {
+    inputHTML = `
+      <textarea class="essay-area" id="essay-input" placeholder="Tulis jawaban Anda di sini…"></textarea>
+      <button class="submit-essay" onclick="checkEsai()">Kirim Jawaban →</button>
+    `;
+  }
+
+  qa.innerHTML = `
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-num">SOAL ${state.current+1}/${state.questions.length}</span>
+        <span class="q-topic-tag">${q.topic}</span>
+        <span class="q-type-tag ${typeClass[q.type]}">${typeLabel[q.type]}</span>
+      </div>
+      <p class="q-text">${q.q}</p>
+      ${inputHTML}
+      <div id="feedback-area"></div>
+      <div class="controls" id="ctrl-area" style="display:none">
+        <button class="btn-restart" onclick="startSession()">↺ Sesi Baru</button>
+        <button class="btn-next" onclick="nextQuestion()">${state.current+1 < state.questions.length ? 'Soal Berikutnya →' : 'Lihat Hasil 🎯'}</button>
+      </div>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// CHECK ANSWERS
+// ─────────────────────────────────────────────
+function checkPilihan(btn, idx) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const correct = (idx === q.ans);
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.ans].classList.add('reveal');
+
+  correct ? state.correct++ : state.wrong++;
+  updateStats();
+  showFeedback(correct, q);
+  document.getElementById('ctrl-area').style.display = 'flex';
+}
+
+function checkTF(btn, val) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.current];
+  const btns = document.querySelectorAll('.tf-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const correct = (val === q.ans);
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  const other = [...btns].find(b => b !== btn);
+  if (!correct) other.classList.add('correct');
+
+  correct ? state.correct++ : state.wrong++;
+  updateStats();
+  showFeedback(correct, q);
+  document.getElementById('ctrl-area').style.display = 'flex';
+}
+
+function checkEsai() {
+  if (state.answered) return;
+  const val = document.getElementById('essay-input').value.trim();
+  if (!val) { alert('Silakan tulis jawaban Anda terlebih dahulu.'); return; }
+  state.answered = true;
+  document.getElementById('essay-input').disabled = true;
+  document.querySelector('.submit-essay').disabled = true;
+
+  const q = state.questions[state.current];
+  // Auto-grade esai based on keywords
+  const lower = val.toLowerCase();
+  const matched = q.keyPoints.filter(kp => {
+    const words = kp.toLowerCase().split(/[\s,]+/).filter(w => w.length > 4);
+    return words.some(w => lower.includes(w));
+  });
+  const score = matched.length / q.keyPoints.length;
+  const correct = score >= 0.4;
+  correct ? state.correct++ : state.wrong++;
+  updateStats();
+
+  const fb = document.getElementById('feedback-area');
+  const pct = Math.round(score * 100);
+  fb.innerHTML = `
+    <div class="feedback essay-fb">
+      <div class="fb-title">📝 Evaluasi Jawaban Anda — Kecocokan: ${pct}%</div>
+      <p class="detail">Jawaban Anda mencakup <strong>${matched.length}/${q.keyPoints.length}</strong> poin kunci.</p>
+      <div class="key-point"><strong>🔑 Poin Kunci yang Diharapkan:</strong><br>${q.keyPoints.map(p=>`• ${p}`).join('<br>')}</div>
+      <div class="key-point" style="margin-top:8px;border-left-color:var(--accent)"><strong>📚 Model Jawaban:</strong><br>${q.modelAns}</div>
+    </div>`;
+  document.getElementById('ctrl-area').style.display = 'flex';
+}
+
+function showFeedback(correct, q) {
+  const fb = document.getElementById('feedback-area');
+  const icon = correct ? '✅' : '❌';
+  const cls  = correct ? 'correct-fb' : 'wrong-fb';
+  const title = correct ? 'Jawaban Benar!' : 'Jawaban Kurang Tepat';
+
+  let wrongAns = '';
+  if (!correct && q.type === 'pilihan') {
+    wrongAns = `<p class="detail" style="margin-top:6px">✅ <strong>Jawaban benar:</strong> ${q.opts[q.ans]}</p>`;
+  } else if (!correct && q.type === 'benar') {
+    wrongAns = `<p class="detail" style="margin-top:6px">✅ <strong>Jawaban benar:</strong> ${q.ans ? 'BENAR' : 'SALAH'}</p>`;
+  }
+
+  fb.innerHTML = `
+    <div class="feedback ${cls}">
+      <div class="fb-title">${icon} ${title}</div>
+      ${wrongAns}
+      <p class="detail">${q.exp}</p>
+      ${q.tip ? `<div class="key-point">💡 <strong>Tips:</strong> ${q.tip}</div>` : ''}
+    </div>`;
+}
+
+function nextQuestion() {
+  state.current++;
+  renderQuestion();
+}
+
+// ─────────────────────────────────────────────
+// RESULT
+// ─────────────────────────────────────────────
+function showResult() {
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('quiz-area').innerHTML = '';
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+
+  const total = state.correct + state.wrong;
+  const pct = total > 0 ? Math.round(state.correct/total*100) : 0;
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-c').textContent = state.correct;
+  document.getElementById('res-w').textContent = state.wrong;
+  document.getElementById('res-t').textContent = total;
+
+  let title, msg;
+  if (pct >= 85)      { title = '🏆 Luar Biasa!';    msg = 'Penguasaan materi sangat baik. Anda siap menghadapi ujian sesungguhnya!'; }
+  else if (pct >= 70) { title = '👏 Bagus!';          msg = 'Pemahaman sudah cukup kuat. Tinjau kembali topik yang kurang untuk memaksimalkan nilai.'; }
+  else if (pct >= 55) { title = '📖 Perlu Belajar Lebih'; msg = 'Fondasi sudah ada, tapi beberapa konsep perlu diperdalam. Ulangi latihan!'; }
+  else                { title = '💪 Jangan Menyerah!'; msg = 'Materi ini membutuhkan pemahaman mendalam. Pelajari ulang modul dan coba lagi.'; }
+
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-msg').textContent = msg;
+
+  document.getElementById('btn-play-again').onclick = () => {
+    document.getElementById('result-screen').style.display = 'none';
+    startSession();
+  };
+}
+</script>
+</body>
+</html>
